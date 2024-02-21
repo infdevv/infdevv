@@ -1,7 +1,7 @@
-## As a wise man once said " I cant code "
+I code?
 
-Except that wise man was me and in 2023 😭
-
-But because your suffering from seeing my writing heres a niko image or your brain:
-
-<img src="https://media.tenor.com/8QTiEfTe1RoAAAAi/niko-oneshot.gif" alt="funni">
+![infdevv's Stats](https://github-readme-stats.vercel.app/api?username=infdevv&theme=blueberry&show_icons=true&hide_border=true&count_private=true)
+<hr>
+<img src="https://github-readme-streak-stats.herokuapp.com/?user=infdevv&theme=blueberry&hide_border=true">
+<hr>
+<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=infdevv&theme=blueberry&show_icons=true&hide_border=true&layout=compact">
