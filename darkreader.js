@@ -257,4 +257,119 @@
                     <button onclick="saveSettings()" style="
                         background: var(--color-primary);
                         color: white;
-                        border
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                    ">Save Settings</button>
+                    <button onclick="resetToAuto()" style="
+                        background: var(--color-surface);
+                        color: var(--color-text-primary);
+                        border: 1px solid var(--color-border);
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                    ">Reset to Auto</button>
+                    <button onclick="toggleNow()" style="
+                        background: var(--color-warning, #f59e0b);
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                    ">Toggle Now</button>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 12px; background: var(--color-surface); border-radius: 6px;">
+                    <div style="color: var(--color-text-secondary); font-size: 12px; line-height: 1.4;">
+                        <strong>Current Status:</strong><br>
+                        Mode: <span id="currentMode">${darkModeSettings.autoMode ? 'Auto' : 'Manual'}</span><br>
+                        Time: <span id="currentTime">${new Date().toLocaleTimeString()}</span><br>
+                        Should be dark: <span id="shouldBeDark">${shouldBeDark() ? 'Yes' : 'No'}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        const settingsPanel = window.axiomAPI.createFloatingPanel(settingsContent, {
+            title: 'Dark Mode Settings',
+            width: '350px',
+            height: '450px',
+            top: '100px',
+            left: '300px'
+        });
+        
+        // Make functions globally available
+        window.saveSettings = () => {
+            const autoMode = document.getElementById('autoModeCheck').checked;
+            const darkStart = parseInt(document.getElementById('darkStartSelect').value);
+            const darkEnd = parseInt(document.getElementById('darkEndSelect').value);
+            
+            darkModeSettings.autoMode = autoMode;
+            darkModeSettings.darkStart = darkStart;
+            darkModeSettings.darkEnd = darkEnd;
+            
+            if (autoMode) {
+                darkModeSettings.manualOverride = null;
+            }
+            
+            saveDarkModeSettings();
+            applyDarkMode();
+            
+            window.axiomAPI.notify('Settings saved!', 'success');
+            settingsPanel.close();
+        };
+        
+        window.resetToAuto = () => {
+            darkModeSettings.autoMode = true;
+            darkModeSettings.manualOverride = null;
+            saveDarkModeSettings();
+            applyDarkMode();
+            window.axiomAPI.notify('Reset to automatic mode', 'info');
+            settingsPanel.close();
+        };
+        
+        window.toggleNow = () => {
+            toggleDarkMode();
+            settingsPanel.close();
+        };
+        
+        // Update time display every second
+        const timeInterval = setInterval(() => {
+            const timeElement = document.getElementById('currentTime');
+            const shouldBeElement = document.getElementById('shouldBeDark');
+            const modeElement = document.getElementById('currentMode');
+            
+            if (timeElement && shouldBeElement && modeElement) {
+                timeElement.textContent = new Date().toLocaleTimeString();
+                shouldBeElement.textContent = shouldBeDark() ? 'Yes' : 'No';
+                modeElement.textContent = darkModeSettings.autoMode ? 'Auto' : 'Manual';
+            } else {
+                clearInterval(timeInterval);
+            }
+        }, 1000);
+    }
+    
+    function generateTimeOptions(selectedHour) {
+        let options = '';
+        for (let i = 0; i < 24; i++) {
+            const hour12 = i === 0 ? 12 : i > 12 ? i - 12 : i;
+            const ampm = i < 12 ? 'AM' : 'PM';
+            const selected = i === selectedHour ? 'selected' : '';
+            options += `<option value="${i}" ${selected}>${hour12}:00 ${ampm}</option>`;
+        }
+        return options;
+    }
+    
+    function saveDarkModeSettings() {
+        window.axiomAPI.storage.set('dark_mode_settings', darkModeSettings);
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDarkModeToggle);
+    } else {
+        initDarkModeToggle();
+    }
+    
+})();
